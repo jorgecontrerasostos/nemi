@@ -23,6 +23,6 @@ async def get_companion_response(messages: list[Message], language: str = "en") 
         model="claude-sonnet-4-6",
         max_tokens=1024,
         system=system,
-        messages=[{"role": m.role, "content": m.content} for m in messages],
+        messages=[{"role": m.role, "content": m.content} for m in messages], # type: ignore
     )
-    return response.content[0].text
+    return response.content[0].text # pyright: ignore[reportAttributeAccessIssue]
