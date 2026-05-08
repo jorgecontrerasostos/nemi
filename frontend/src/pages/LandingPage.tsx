@@ -177,7 +177,7 @@ export default function LandingPage({ onStart }: Props) {
             onClick={onStart}
             className="inline-flex items-center gap-2 bg-on-primary text-primary font-semibold px-8 py-4 rounded-full hover:opacity-90 transition-opacity min-h-[44px] text-base"
           >
-            Create Your Free Account
+            Start for Free
             <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_forward</span>
           </button>
         </div>

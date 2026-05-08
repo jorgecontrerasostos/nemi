@@ -40,7 +40,7 @@ describe("LandingPage", () => {
     const onStart = vi.fn();
     render(<LandingPage onStart={onStart} />);
     await userEvent.click(
-      screen.getByRole("button", { name: /Create Your Free Account/i })
+      screen.getByRole("button", { name: /Start for Free/i })
     );
     expect(onStart).toHaveBeenCalledTimes(1);
   });

@@ -55,6 +55,7 @@ export default function App() {
 
   const { send, isLoading } = useCompanion({ language, onReply: handleReply, onError: handleError });
 
+  // Store latest send in a ref so the greeting effect doesn't re-fire on language change.
   const sendRef = useRef(send);
   useEffect(() => { sendRef.current = send; }, [send]);
 
