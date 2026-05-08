@@ -1,0 +1,36 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, it, expect, vi } from "vitest";
+import ChatInput from "./ChatInput.tsx";
+
+describe("ChatInput", () => {
+  it("calls onSend with trimmed text on submit", async () => {
+    const onSend = vi.fn();
+    render(<ChatInput onSend={onSend} disabled={false} placeholder="Type..." />);
+    await userEvent.type(screen.getByPlaceholderText("Type..."), "  Hello  ");
+    fireEvent.submit(screen.getByRole("button").closest("form")!);
+    expect(onSend).toHaveBeenCalledWith("Hello");
+  });
+
+  it("does not call onSend when input is empty", () => {
+    const onSend = vi.fn();
+    render(<ChatInput onSend={onSend} disabled={false} placeholder="Type..." />);
+    fireEvent.submit(screen.getByRole("button").closest("form")!);
+    expect(onSend).not.toHaveBeenCalled();
+  });
+
+  it("clears input after send", async () => {
+    const onSend = vi.fn();
+    render(<ChatInput onSend={onSend} disabled={false} placeholder="Type..." />);
+    const textarea = screen.getByPlaceholderText("Type...");
+    await userEvent.type(textarea, "Hello");
+    fireEvent.submit(screen.getByRole("button").closest("form")!);
+    expect((textarea as HTMLTextAreaElement).value).toBe("");
+  });
+
+  it("disables textarea and button when disabled prop is true", () => {
+    render(<ChatInput onSend={vi.fn()} disabled={true} placeholder="Type..." />);
+    expect(screen.getByPlaceholderText("Type...")).toBeDisabled();
+    expect(screen.getByRole("button")).toBeDisabled();
+  });
+});
