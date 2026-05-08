@@ -9,6 +9,7 @@ import ChatBubble from "./components/ChatBubble.tsx";
 import ChatInput from "./components/ChatInput.tsx";
 import SessionTimer from "./components/SessionTimer.tsx";
 import SessionSummary from "./components/SessionSummary.tsx";
+import LandingPage from "./pages/LandingPage.tsx";
 import type { Message } from "./services/companion_api.ts";
 import type { SessionState } from "./utils/session.ts";
 
@@ -20,6 +21,9 @@ const TIMER_ACTIVE_STATES = new Set<SessionState>([
 ]);
 
 export default function App() {
+  const [view, setView] = useState<"landing" | "chat">("landing");
+  const hasStarted = useRef(false);
+
   const {
     state,
     messages,
@@ -51,7 +55,6 @@ export default function App() {
 
   const { send, isLoading } = useCompanion({ language, onReply: handleReply, onError: handleError });
 
-  // Store latest send in a ref so the greeting effect doesn't re-fire on language change
   const sendRef = useRef(send);
   useEffect(() => { sendRef.current = send; }, [send]);
 
@@ -62,12 +65,22 @@ export default function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Greeting fires on mount and whenever a new session starts (sessionKey increments)
+  // Guard prevents a spurious API call on mount while the user is still on the landing page.
+  // hasStarted flips to true the moment the user clicks any "Start" CTA.
   useEffect(() => {
+    if (!hasStarted.current) return;
     void sendRef.current([]);
     toScoping();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionKey]);
+
+  const handleStart = () => {
+    hasStarted.current = true;
+    resetSession();
+    resetTimer();
+    setView("chat");
+    setSessionKey((k) => k + 1);
+  };
 
   const handleSend = async (text: string) => {
     addMessage("user", text);
@@ -89,6 +102,10 @@ export default function App() {
     resetTimer();
     setSessionKey((k) => k + 1);
   };
+
+  if (view === "landing") {
+    return <LandingPage onStart={handleStart} />;
+  }
 
   if (state === SESSION_STATES.COMPLETED) {
     const lastAssistantMsg =
