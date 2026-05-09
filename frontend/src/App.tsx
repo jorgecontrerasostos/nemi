@@ -3,6 +3,8 @@ import useSession from "./hooks/useSession.ts";
 import useTimer from "./hooks/useTimer.ts";
 import useIdleDetection from "./hooks/useIdleDetection.ts";
 import useCompanion from "./hooks/useCompanion.ts";
+import useVoiceInput from "./hooks/useVoiceInput.ts";
+import useVoiceSynthesis from "./hooks/useVoiceSynthesis.ts";
 import { useTranslation } from "./i18n/index.ts";
 import { SESSION_STATES, isFeedbackTrigger } from "./utils/session.ts";
 import ChatBubble from "./components/ChatBubble.tsx";
@@ -22,6 +24,9 @@ const TIMER_ACTIVE_STATES = new Set<SessionState>([
 
 export default function App() {
   const [view, setView] = useState<"landing" | "chat">("landing");
+  const [voiceMode, setVoiceMode] = useState(false);
+  const voiceModeRef = useRef(false);
+  useEffect(() => { voiceModeRef.current = voiceMode; }, [voiceMode]);
   const hasStarted = useRef(false);
 
   const {
@@ -43,14 +48,29 @@ export default function App() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [sessionKey, setSessionKey] = useState(0);
 
-  const handleReply = useCallback(
-    (reply: string) => addMessage("assistant", reply),
-    [addMessage]
-  );
+  const { speak, isSpeaking, stop: stopSpeaking } = useVoiceSynthesis();
+
+  const handleIdle = useCallback(() => toIdleMidSession(), [toIdleMidSession]);
 
   const handleError = useCallback(
     (msg: string) => addMessage("assistant", msg),
     [addMessage]
+  );
+
+  // startListening is captured via ref to break the circular dependency:
+  // handleReply calls startListening, but useVoiceInput is declared after useCompanion.
+  const startListeningRef = useRef<() => void>(() => {});
+
+  const handleReply = useCallback(
+    (reply: string) => {
+      addMessage("assistant", reply);
+      if (voiceMode) {
+        speak(reply).then(() => {
+          if (voiceModeRef.current) startListeningRef.current();
+        });
+      }
+    },
+    [addMessage, voiceMode, speak]
   );
 
   const { send, isLoading } = useCompanion({ language, onReply: handleReply, onError: handleError });
@@ -59,8 +79,37 @@ export default function App() {
   const sendRef = useRef(send);
   useEffect(() => { sendRef.current = send; }, [send]);
 
-  const handleIdle = useCallback(() => toIdleMidSession(), [toIdleMidSession]);
   const { recordActivity } = useIdleDetection({ sessionState: state, onIdle: handleIdle });
+
+  const submitMessage = useCallback(
+    (text: string) => {
+      addMessage("user", text);
+      recordActivity();
+      const nextMessages: Message[] = [...messages, { role: "user", content: text }];
+      if (isFeedbackTrigger(text) && state === SESSION_STATES.EXPLAINING) {
+        toFeedback();
+      } else if (state === SESSION_STATES.SCOPING || state === SESSION_STATES.IDLE_MID_SESSION) {
+        toExplaining();
+      }
+      void send(nextMessages);
+    },
+    [addMessage, recordActivity, messages, state, toFeedback, toExplaining, send]
+  );
+
+  const handleTranscript = useCallback(
+    (text: string) => { submitMessage(text); },
+    [submitMessage]
+  );
+
+  const { isListening, interimTranscript, startListening, stopListening, isSupported } =
+    useVoiceInput({
+      lang: language === "es" ? "es-ES" : "en-US",
+      silenceMs: 3000,
+      onTranscript: handleTranscript,
+    });
+
+  // Keep the ref in sync so handleReply can call startListening without a circular dep.
+  useEffect(() => { startListeningRef.current = startListening; }, [startListening]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -83,22 +132,26 @@ export default function App() {
     setSessionKey((k) => k + 1);
   };
 
-  const handleSend = async (text: string) => {
-    addMessage("user", text);
-    recordActivity();
+  const handleSend = useCallback(
+    (text: string) => { submitMessage(text); },
+    [submitMessage]
+  );
 
-    const nextMessages: Message[] = [...messages, { role: "user", content: text }];
-
-    if (isFeedbackTrigger(text) && state === SESSION_STATES.EXPLAINING) {
-      toFeedback();
-    } else if (state === SESSION_STATES.SCOPING || state === SESSION_STATES.IDLE_MID_SESSION) {
-      toExplaining();
+  const handleToggleVoice = useCallback(() => {
+    if (isListening) {
+      stopListening();
+      setVoiceMode(false);
+    } else {
+      stopSpeaking();
+      setVoiceMode(true);
+      startListening();
     }
-
-    await send(nextMessages);
-  };
+  }, [isListening, stopListening, stopSpeaking, startListening]);
 
   const handleNewSession = () => {
+    stopListening();
+    stopSpeaking();
+    setVoiceMode(false);
     resetSession();
     resetTimer();
     setSessionKey((k) => k + 1);
@@ -132,7 +185,7 @@ export default function App() {
           </button>
           {state !== SESSION_STATES.IDLE_BEFORE_START && (
             <button
-              onClick={() => toCompleted()}
+              onClick={() => { stopListening(); stopSpeaking(); setVoiceMode(false); toCompleted(); }}
               className="text-sm text-red-500 min-h-[44px] px-2"
             >
               {t.endSession}
@@ -149,7 +202,16 @@ export default function App() {
         <div ref={messagesEndRef} />
       </div>
 
-      <ChatInput onSend={handleSend} disabled={isLoading} placeholder={t.inputPlaceholder} />
+      <ChatInput
+        onSend={handleSend}
+        disabled={isLoading}
+        placeholder={t.inputPlaceholder}
+        isListening={isListening}
+        interimTranscript={interimTranscript}
+        isSupported={isSupported}
+        onToggleVoice={handleToggleVoice}
+        isSpeaking={isSpeaking}
+      />
     </div>
   );
 }

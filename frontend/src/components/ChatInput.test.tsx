@@ -31,6 +31,108 @@ describe("ChatInput", () => {
   it("disables textarea and button when disabled prop is true", () => {
     render(<ChatInput onSend={vi.fn()} disabled={true} placeholder="Type..." />);
     expect(screen.getByPlaceholderText("Type...")).toBeDisabled();
-    expect(screen.getByRole("button")).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Send message/i })).toBeDisabled();
+  });
+
+  describe("voice mode", () => {
+    it("shows mic button when isSupported is true", () => {
+      render(
+        <ChatInput
+          onSend={vi.fn()}
+          disabled={false}
+          placeholder="Type..."
+          isSupported={true}
+          onToggleVoice={vi.fn()}
+        />
+      );
+      expect(
+        screen.getByRole("button", { name: /Start voice input/i })
+      ).toBeInTheDocument();
+    });
+
+    it("does not show mic button when isSupported is false", () => {
+      render(<ChatInput onSend={vi.fn()} disabled={false} placeholder="Type..." />);
+      expect(
+        screen.queryByRole("button", { name: /voice/i })
+      ).not.toBeInTheDocument();
+    });
+
+    it("calls onToggleVoice when mic button is clicked", async () => {
+      const onToggleVoice = vi.fn();
+      render(
+        <ChatInput
+          onSend={vi.fn()}
+          disabled={false}
+          placeholder="Type..."
+          isSupported={true}
+          onToggleVoice={onToggleVoice}
+        />
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /Start voice input/i })
+      );
+      expect(onToggleVoice).toHaveBeenCalledOnce();
+    });
+
+    it("shows interim transcript in textarea while listening", () => {
+      render(
+        <ChatInput
+          onSend={vi.fn()}
+          disabled={false}
+          placeholder="Type..."
+          isSupported={true}
+          isListening={true}
+          interimTranscript="gradient des..."
+          onToggleVoice={vi.fn()}
+        />
+      );
+      expect(
+        screen.getByDisplayValue("gradient des...")
+      ).toBeInTheDocument();
+    });
+
+    it("hides send button while listening", () => {
+      render(
+        <ChatInput
+          onSend={vi.fn()}
+          disabled={false}
+          placeholder="Type..."
+          isSupported={true}
+          isListening={true}
+          onToggleVoice={vi.fn()}
+        />
+      );
+      expect(screen.queryByText("↑")).not.toBeInTheDocument();
+    });
+
+    it("disables mic button while TTS is speaking", () => {
+      render(
+        <ChatInput
+          onSend={vi.fn()}
+          disabled={false}
+          placeholder="Type..."
+          isSupported={true}
+          isSpeaking={true}
+          onToggleVoice={vi.fn()}
+        />
+      );
+      expect(
+        screen.getByRole("button", { name: /Start voice input/i })
+      ).toBeDisabled();
+    });
+
+    it("disables textarea while listening", () => {
+      render(
+        <ChatInput
+          onSend={vi.fn()}
+          disabled={false}
+          placeholder="Type..."
+          isSupported={true}
+          isListening={true}
+          onToggleVoice={vi.fn()}
+        />
+      );
+      expect(screen.getByRole("textbox")).toBeDisabled();
+    });
   });
 });
