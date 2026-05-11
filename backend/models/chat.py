@@ -9,6 +9,7 @@ class Message(BaseModel):
 class ChatRequest(BaseModel):
     messages: list[Message]
     language: str = "en"
+    topic: str | None = None
 
 
 class ChatResponse(BaseModel):

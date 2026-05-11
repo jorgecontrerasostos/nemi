@@ -4,6 +4,7 @@ import type { Language } from "../i18n/index.ts";
 
 interface Options {
   language: Language;
+  topic?: string;
   onReply: (reply: string) => void;
   onError?: (message: string) => void;
 }
@@ -13,14 +14,14 @@ export interface CompanionHook {
   isLoading: boolean;
 }
 
-export default function useCompanion({ language, onReply, onError }: Options): CompanionHook {
+export default function useCompanion({ language, topic, onReply, onError }: Options): CompanionHook {
   const [isLoading, setIsLoading] = useState(false);
 
   const send = useCallback(
     async (messages: Message[]) => {
       setIsLoading(true);
       try {
-        const reply = await sendMessage(messages, language);
+        const reply = await sendMessage(messages, language, topic);
         onReply(reply);
       } catch (err) {
         onError?.((err as Error).message);
@@ -28,7 +29,7 @@ export default function useCompanion({ language, onReply, onError }: Options): C
         setIsLoading(false);
       }
     },
-    [language, onReply, onError]
+    [language, topic, onReply, onError]
   );
 
   return { send, isLoading };

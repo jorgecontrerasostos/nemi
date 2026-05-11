@@ -9,12 +9,13 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
 
 export async function sendMessage(
   messages: Message[],
-  language: Language = "en"
+  language: Language = "en",
+  topic?: string
 ): Promise<string> {
   const response = await fetch(`${API_BASE}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages, language }),
+    body: JSON.stringify({ messages, language, topic }),
   });
 
   if (!response.ok) {
