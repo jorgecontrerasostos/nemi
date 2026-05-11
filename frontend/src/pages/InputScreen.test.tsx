@@ -46,4 +46,22 @@ describe("InputScreen", () => {
 
     await waitFor(() => expect(onScope).toHaveBeenCalledWith(mockScopeResult));
   });
+
+  it("shows error message when fetchScope fails", async () => {
+    vi.spyOn(scopeApi, "fetchScope").mockRejectedValue(new Error("API error"));
+
+    render(<InputScreen onScope={vi.fn()} onBack={vi.fn()} />);
+    fireEvent.change(screen.getByPlaceholderText("e.g. Photosynthesis, the French Revolution…"), {
+      target: { value: "Photosynthesis" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /continue/i }));
+
+    await waitFor(() => expect(screen.getByText(/something went wrong/i)).toBeInTheDocument());
+  });
+
+  it("shows photo upload zone when Photo tab is clicked", () => {
+    render(<InputScreen onScope={vi.fn()} onBack={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: /photo/i }));
+    expect(screen.getByText(/take a photo or upload/i)).toBeInTheDocument();
+  });
 });

@@ -11,7 +11,7 @@ export interface ScopeResult {
   subtopics: Subtopic[];
 }
 
-type MediaType = "image/jpeg" | "image/png" | "image/webp";
+export type MediaType = "image/jpeg" | "image/png" | "image/webp";
 
 export async function fetchScope(payload: {
   topic?: string;

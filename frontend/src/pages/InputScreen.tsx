@@ -1,9 +1,10 @@
 // frontend/src/pages/InputScreen.tsx
 import { useState, useRef } from "react";
-import { fetchScope, type ScopeResult } from "../services/scope_api.ts";
+import { fetchScope, type ScopeResult, type MediaType } from "../services/scope_api.ts";
 
 type Mode = "topic" | "notes" | "photo";
-type MediaType = "image/jpeg" | "image/png" | "image/webp";
+
+const ALLOWED_TYPES: MediaType[] = ["image/jpeg", "image/png", "image/webp"];
 
 interface Props {
   onScope: (result: ScopeResult) => void;
@@ -17,6 +18,7 @@ export default function InputScreen({ onScope, onBack }: Props) {
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [imageMediaType, setImageMediaType] = useState<MediaType>("image/jpeg");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit =
@@ -27,6 +29,11 @@ export default function InputScreen({ onScope, onBack }: Props) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!ALLOWED_TYPES.includes(file.type as MediaType)) {
+      setError("Please select a JPG or PNG image.");
+      return;
+    }
+    setError(null);
     setImageMediaType(file.type as MediaType);
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -39,6 +46,7 @@ export default function InputScreen({ onScope, onBack }: Props) {
   const handleSubmit = async () => {
     if (!canSubmit || isLoading) return;
     setIsLoading(true);
+    setError(null);
     try {
       const payload =
         mode === "topic"
@@ -48,6 +56,8 @@ export default function InputScreen({ onScope, onBack }: Props) {
           : { image_base64: imageBase64!, image_media_type: imageMediaType };
       const result = await fetchScope(payload);
       onScope(result);
+    } catch {
+      setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -116,7 +126,7 @@ export default function InputScreen({ onScope, onBack }: Props) {
                 className="flex-1 bg-transparent text-sm text-on-surface outline-none placeholder:text-outline-variant font-sans"
               />
               {topicText && (
-                <button onClick={() => setTopicText("")}>
+                <button onClick={() => setTopicText("")} aria-label="Clear topic">
                   <span className="material-symbols-outlined text-outline-variant text-lg">close</span>
                 </button>
               )}
@@ -174,6 +184,9 @@ export default function InputScreen({ onScope, onBack }: Props) {
             {ctaLabel}
             {!isLoading && <span className="material-symbols-outlined text-lg">{mode === "topic" ? "arrow_forward" : "auto_awesome"}</span>}
           </button>
+          {error && (
+            <p className="text-center text-xs text-red-600">{error}</p>
+          )}
           <p className="text-center text-xs text-outline-variant">
             {mode === "topic"
               ? "Nemi will help narrow the focus"
