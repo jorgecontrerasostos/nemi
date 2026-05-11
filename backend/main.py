@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers.companion import router as companion_router
+from routers.scope import router as scope_router
 from routers.tts import router as tts_router
 
 load_dotenv()
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(companion_router, prefix="/api")
+app.include_router(scope_router, prefix="/api")
 app.include_router(tts_router, prefix="/api")
 
 

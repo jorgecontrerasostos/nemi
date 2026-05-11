@@ -60,3 +60,41 @@ async def test_generate_scope_raises_on_invalid_json():
         from services.scope import generate_scope
         with pytest.raises(ValueError, match="Invalid scope response"):
             await generate_scope(topic="Test")
+
+
+from unittest.mock import patch
+from httpx import ASGITransport, AsyncClient
+
+
+@pytest.fixture
+def app():
+    from main import app as fastapi_app
+    return fastapi_app
+
+
+async def test_scope_endpoint_returns_topic_and_subtopics(app):
+    mock_result = {
+        "topic": "Photosynthesis",
+        "subtopics": [
+            {"title": "Light Reactions", "description": "ATP production", "icon": "wb_sunny"},
+            {"title": "Calvin Cycle", "description": "CO2 fixation", "icon": "cycle"},
+            {"title": "Chloroplast", "description": "Cell structure", "icon": "biotech"},
+            {"title": "Efficiency", "description": "Rate factors", "icon": "speed"},
+        ],
+    }
+    with patch("routers.scope.generate_scope", new_callable=AsyncMock, return_value=mock_result):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+            response = await ac.post("/api/scope", json={"topic": "Photosynthesis"})
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["topic"] == "Photosynthesis"
+    assert len(data["subtopics"]) == 4
+
+
+async def test_scope_endpoint_returns_502_on_service_error(app):
+    with patch("routers.scope.generate_scope", new_callable=AsyncMock, side_effect=Exception("Claude down")):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+            response = await ac.post("/api/scope", json={"topic": "Test"})
+
+    assert response.status_code == 502
