@@ -1,28 +1,13 @@
 import json
 import os
+from pathlib import Path
 
 import anthropic
 
 _client = anthropic.AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
 
-_SYSTEM_PROMPT = """You are a study assistant using the Feynman Technique.
-
-Given a topic name, text notes, or an image of notes, identify the main topic and generate exactly 4 focused subtopics the student could practice explaining.
-
-Respond with valid JSON only — no explanation, no markdown code fences:
-
-{
-  "topic": "Concise topic name (1-5 words)",
-  "subtopics": [
-    {
-      "title": "Subtopic name (3-8 words)",
-      "description": "One sentence, max 10 words",
-      "icon": "material_symbol_name"
-    }
-  ]
-}
-
-Use only these Material Symbols icon names: wb_sunny, cycle, biotech, speed, science, memory, psychology, calculate, language, history, bolt, water_drop, eco, hub, analytics, explore, microscope, functions, timeline, auto_awesome"""
+_PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
+_SYSTEM_PROMPT = (_PROMPTS_DIR / "scope.txt").read_text(encoding="utf-8")
 
 
 async def generate_scope(
