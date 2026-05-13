@@ -87,7 +87,7 @@ export default function SubtopicPicker({ topic, subtopics, onStart, onBack }: Pr
         {/* Escape hatch */}
         <button
           onClick={() => onStart(topic)}
-          className="text-sm text-on-surface-variant underline underline-offset-4 decoration-outline-variant text-center flex items-center justify-center gap-1"
+          className="text-sm text-on-surface-variant underline underline-offset-4 decoration-outline-variant text-center flex items-center justify-center gap-1 min-h-[44px]"
         >
           Study the full topic instead
           <span className="material-symbols-outlined text-sm">arrow_forward</span>
