@@ -34,6 +34,13 @@ describe("ChatInput", () => {
     expect(screen.getByRole("button", { name: /Send message/i })).toBeDisabled();
   });
 
+  it("shows feedback hint text", () => {
+    render(<ChatInput onSend={vi.fn()} disabled={false} placeholder="Type here" />);
+    expect(screen.getByText(/say/i)).toBeInTheDocument();
+    expect(screen.getByText(/feedback/i)).toBeInTheDocument();
+    expect(screen.getByText(/anytime/i)).toBeInTheDocument();
+  });
+
   describe("voice mode", () => {
     it("shows mic button when isSupported is true", () => {
       render(
@@ -102,7 +109,7 @@ describe("ChatInput", () => {
           onToggleVoice={vi.fn()}
         />
       );
-      expect(screen.queryByText("↑")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: /Send message/i })).not.toBeInTheDocument();
     });
 
     it("disables mic button while TTS is speaking", () => {

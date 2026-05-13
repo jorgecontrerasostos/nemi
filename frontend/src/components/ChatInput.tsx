@@ -38,42 +38,47 @@ export default function ChatInput({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t border-gray-200 bg-white">
-      {isSupported && (
-        <button
-          type="button"
-          onClick={onToggleVoice}
-          disabled={isSpeaking}
-          aria-label={isListening ? "Stop recording" : "Start voice input"}
-          className={`px-3 py-3 rounded-xl text-sm min-w-[44px] min-h-[44px] transition-colors disabled:opacity-40 ${
-            isListening
-              ? "bg-red-100 text-red-600 animate-pulse"
-              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-          }`}
-        >
-          🎤
-        </button>
-      )}
-      <textarea
-        ref={textareaRef}
-        value={isListening ? interimTranscript : value}
-        onChange={(e) => { if (!isListening) setValue(e.target.value); }}
-        onKeyDown={handleKeyDown}
-        disabled={disabled || isListening}
-        placeholder={isListening ? "Listening..." : placeholder}
-        rows={1}
-        className="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-50 min-h-[44px]"
-      />
-      {!isListening && (
-        <button
-          type="submit"
-          disabled={disabled || !value.trim()}
-          aria-label="Send message"
-          className="px-5 py-3 bg-indigo-600 text-white rounded-xl text-sm font-medium disabled:opacity-40 min-w-[44px] min-h-[44px] active:bg-indigo-700 transition-colors"
-        >
-          ↑
-        </button>
-      )}
-    </form>
+    <div className="border-t border-outline-variant bg-surface-container-lowest">
+      <p className="text-center text-xs text-outline-variant pt-2 px-4">
+        Say <span className="text-primary font-semibold">"feedback"</span> anytime to get your review
+      </p>
+      <form onSubmit={handleSubmit} className="flex gap-2 px-4 py-3">
+        {isSupported && (
+          <button
+            type="button"
+            onClick={onToggleVoice}
+            disabled={isSpeaking}
+            aria-label={isListening ? "Stop recording" : "Start voice input"}
+            className={`px-3 py-3 rounded-xl text-sm min-w-[44px] min-h-[44px] transition-colors disabled:opacity-40 ${
+              isListening
+                ? "bg-red-100 text-red-600 animate-pulse"
+                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+            }`}
+          >
+            <span className="material-symbols-outlined text-lg">mic</span>
+          </button>
+        )}
+        <textarea
+          ref={textareaRef}
+          value={isListening ? interimTranscript : value}
+          onChange={(e) => { if (!isListening) setValue(e.target.value); }}
+          onKeyDown={handleKeyDown}
+          disabled={disabled || isListening}
+          placeholder={isListening ? "Listening..." : placeholder}
+          rows={1}
+          className="flex-1 resize-none rounded-2xl border border-outline-variant bg-surface-container-lowest px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary disabled:opacity-50 min-h-[44px] font-sans"
+        />
+        {!isListening && (
+          <button
+            type="submit"
+            disabled={disabled || !value.trim()}
+            aria-label="Send message"
+            className="px-4 py-3 bg-primary text-on-primary rounded-2xl text-sm font-medium disabled:opacity-40 min-w-[44px] min-h-[44px] transition-colors"
+          >
+            <span className="material-symbols-outlined text-lg">arrow_upward</span>
+          </button>
+        )}
+      </form>
+    </div>
   );
 }
