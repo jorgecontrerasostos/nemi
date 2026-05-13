@@ -3,18 +3,25 @@ import { describe, it, expect } from "vitest";
 import ChatBubble from "./ChatBubble.tsx";
 
 describe("ChatBubble", () => {
-  it("renders message content", () => {
-    render(<ChatBubble role="user" content="Hello world" />);
-    expect(screen.getByText("Hello world")).toBeInTheDocument();
+  it("renders assistant message with avatar", () => {
+    render(<ChatBubble role="assistant" content="Hello!" />);
+    expect(screen.getByText("Hello!")).toBeInTheDocument();
+    expect(screen.getByText("N")).toBeInTheDocument();
   });
 
-  it("aligns user messages to the right", () => {
-    const { container } = render(<ChatBubble role="user" content="Hi" />);
+  it("renders user message without avatar", () => {
+    render(<ChatBubble role="user" content="Hi there" />);
+    expect(screen.getByText("Hi there")).toBeInTheDocument();
+    expect(screen.queryByText("N")).not.toBeInTheDocument();
+  });
+
+  it("user bubble aligns right", () => {
+    const { container } = render(<ChatBubble role="user" content="Test" />);
     expect(container.firstChild).toHaveClass("justify-end");
   });
 
-  it("aligns assistant messages to the left", () => {
-    const { container } = render(<ChatBubble role="assistant" content="Hello" />);
+  it("assistant bubble aligns left", () => {
+    const { container } = render(<ChatBubble role="assistant" content="Test" />);
     expect(container.firstChild).toHaveClass("justify-start");
   });
 });
