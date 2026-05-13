@@ -26,3 +26,11 @@ backend/.python-version
 CLAUDE.md
 feynman_companion_PRD.md
 docs/
+
+# Visual brainstorming sessions
+.superpowers/
+
+# Agents
+.agents/
+skills-lock.json
+PRODUCT.md

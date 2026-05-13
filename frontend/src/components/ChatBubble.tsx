@@ -8,7 +8,7 @@ interface Props {
 export default function ChatBubble({ role, content }: Props) {
   const isUser = role === "user";
   return (
-    <div className={`flex items-end gap-2 mb-3 ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex items-end gap-2 mb-3 animate-bubble-in ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
         <div className="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 text-xs font-bold text-on-primary-fixed">
           N

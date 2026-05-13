@@ -19,11 +19,19 @@ function parseFeedback(raw: string): FeedbackItem[] {
     });
 }
 
-const borderColor: Record<FeedbackItem["category"], string> = {
-  strong: "border-l-green-600",
-  shaky: "border-l-amber-500",
-  missed: "border-l-red-600",
-  review: "border-l-primary",
+// Background tint + full 1px border — semantically clear without side-stripe ban violation
+const feedbackBg: Record<FeedbackItem["category"], string> = {
+  strong: "oklch(95% 0.05 145)",
+  shaky:  "oklch(95% 0.06 75)",
+  missed: "oklch(95% 0.05 25)",
+  review: "oklch(95% 0.04 178)",
+};
+
+const feedbackBorder: Record<FeedbackItem["category"], string> = {
+  strong: "oklch(78% 0.12 145)",
+  shaky:  "oklch(78% 0.14 75)",
+  missed: "oklch(78% 0.12 25)",
+  review: "oklch(78% 0.09 178)",
 };
 
 const emoji: Record<FeedbackItem["category"], string> = {
@@ -60,7 +68,7 @@ export default function SessionSummary({ feedbackText, topic, duration, messageC
     <div className="flex flex-col h-full overflow-y-auto bg-surface">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-outline-variant bg-surface-container-lowest">
-        <span className="font-bold text-on-surface text-base">Nemi</span>
+        <span className="font-display font-bold text-on-surface text-base">Nemi</span>
         {duration && (
           <span className="text-xs text-on-surface-variant flex items-center gap-1">
             <span className="material-symbols-outlined text-sm">timer</span>
@@ -72,8 +80,8 @@ export default function SessionSummary({ feedbackText, topic, duration, messageC
       <div className="flex flex-col gap-4 p-5">
         {/* Hero */}
         <div className="bg-primary rounded-2xl p-5 flex flex-col gap-1.5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-on-primary opacity-70">{t.sessionComplete}</p>
-          <p className="text-lg font-bold text-on-primary">{topic ?? "Study Session"}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-on-primary opacity-70">{t.sessionComplete}</p>
+          <p className="font-display text-lg font-bold text-on-primary">{topic ?? "Study Session"}</p>
           <div className="flex gap-4 mt-1">
             {duration && (
               <span className="flex items-center gap-1 text-xs text-on-primary opacity-75">
@@ -113,7 +121,12 @@ export default function SessionSummary({ feedbackText, topic, duration, messageC
             {items.map((item, i) => (
               <div
                 key={i}
-                className={`flex gap-2.5 bg-surface-container-lowest border border-outline-variant border-l-4 ${borderColor[item.category]} rounded-xl p-3 items-start`}
+                className="flex gap-2.5 rounded-xl p-3 items-start border animate-fade-slide"
+                style={{
+                  backgroundColor: feedbackBg[item.category],
+                  borderColor: feedbackBorder[item.category],
+                  animationDelay: `${i * 50}ms`,
+                }}
               >
                 <span className="text-sm flex-shrink-0 mt-0.5">{emoji[item.category]}</span>
                 <span className="text-sm text-on-surface leading-relaxed">{item.text}</span>
@@ -130,7 +143,7 @@ export default function SessionSummary({ feedbackText, topic, duration, messageC
         <div className="flex flex-col gap-2 pt-1">
           <button
             onClick={onNewSession}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-on-primary rounded-2xl font-semibold text-sm min-h-[50px]"
+            className="w-full flex items-center justify-center gap-2 py-4 bg-primary text-on-primary rounded-2xl font-semibold text-sm min-h-[50px] btn-press"
           >
             <span className="material-symbols-outlined text-lg">refresh</span>
             Study a new topic
@@ -138,7 +151,7 @@ export default function SessionSummary({ feedbackText, topic, duration, messageC
           {gapsContext && onStudyGaps && (
             <button
               onClick={() => onStudyGaps(gapsContext)}
-              className="w-full flex items-center justify-center gap-2 py-3.5 border-2 border-outline-variant text-on-surface-variant rounded-2xl font-semibold text-sm min-h-[46px]"
+              className="w-full flex items-center justify-center gap-2 py-3.5 border-2 border-outline-variant text-on-surface-variant rounded-2xl font-semibold text-sm min-h-[46px] btn-press"
             >
               <span className="material-symbols-outlined text-base">replay</span>
               Study the gaps

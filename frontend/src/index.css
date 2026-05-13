@@ -1,27 +1,114 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #06666f;
-  --color-on-primary: #ffffff;
-  --color-secondary: #31666c;
-  --color-surface: #f7fafa;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f1f4f4;
-  --color-surface-container: #eceeee;
-  --color-surface-container-high: #e6e9e9;
-  --color-surface-container-highest: #e0e3e3;
-  --color-on-surface: #181c1d;
-  --color-on-surface-variant: #3f484a;
-  --color-outline-variant: #bec8ca;
-  --color-primary-fixed: #a4eff9;
-  --color-on-primary-fixed: #001f23;
-  --color-secondary-fixed: #b6ecf2;
-  --color-on-secondary-fixed: #002023;
-  --color-on-secondary-container: #386c72;
-  --color-tertiary: #854e26;
-  --color-inverse-primary: #88d2dc;
+  /* Primary: sage-teal. Shifted from cold clinical 196° to warmer 178° — more alive, less institutional */
+  --color-primary: oklch(44% 0.10 178);
+  --color-on-primary: oklch(99.5% 0.004 80);
+  --color-secondary: oklch(44% 0.08 183);
+
+  /* Neutrals: warm stone at hue 80° instead of cold cyan at 194°.
+     Same lightness steps, entirely different feel. */
+  --color-surface: oklch(98.5% 0.010 80);
+  --color-surface-container-lowest: oklch(99.8% 0.004 80);
+  --color-surface-container-low: oklch(96% 0.013 80);
+  --color-surface-container: oklch(94% 0.016 80);
+  --color-surface-container-high: oklch(92% 0.016 80);
+  --color-surface-container-highest: oklch(90% 0.016 80);
+
+  /* Text: warm near-black and teal-influenced mid */
+  --color-on-surface: oklch(14% 0.015 75);
+  --color-on-surface-variant: oklch(34% 0.028 178);
+  --color-outline-variant: oklch(82% 0.018 178);
+
+  /* Fixed/inverse tokens */
+  --color-primary-fixed: oklch(92% 0.06 185);
+  --color-on-primary-fixed: oklch(15% 0.06 185);
+  --color-secondary-fixed: oklch(90% 0.055 183);
+  --color-on-secondary-fixed: oklch(18% 0.06 183);
+  --color-on-secondary-container: oklch(38% 0.07 183);
+  --color-tertiary: oklch(54% 0.12 50);
+  --color-inverse-primary: oklch(83% 0.08 185);
+
   --font-sans: "Lexend", sans-serif;
+  /* Fraunces: variable serif with optical-size axis — warm and alive at display sizes, crisp at small */
+  --font-display: "Fraunces", Georgia, serif;
+
+  /* Strong ease-out — used for all UI enter/exit interactions */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
+
+/* ── Global rendering baseline ───────────────────── */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+}
+
+/* Balance heading line breaks — prevents orphaned single words */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+
+/* ── Entry animations ─────────────────────────────── */
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-bubble-in {
+  animation: bubble-in 200ms var(--ease-out) both;
+}
+
+.animate-fade-slide {
+  opacity: 0;
+  animation: fade-slide-in 280ms var(--ease-out) forwards;
+}
+
+/* ── Button press feedback ────────────────────────── */
+
+/* Add to any pressable element for tactile response */
+.btn-press {
+  transition: transform 160ms var(--ease-out), opacity 160ms ease;
+}
+
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* ── Card hover — pointer devices only ───────────── */
+
+/* Gated so touch taps don't trigger a false hover state */
+.card-hover {
+  transition: transform 200ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-hover:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* ── Shadows ──────────────────────────────────────── */
 
 .soft-lift {
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
@@ -29,4 +116,23 @@
 
 .soft-lift-lg {
   box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Respect reduced motion ───────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bubble-in,
+  .animate-fade-slide {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .btn-press:active {
+    transform: none;
+  }
+
+  .card-hover {
+    transition: none;
+  }
 }

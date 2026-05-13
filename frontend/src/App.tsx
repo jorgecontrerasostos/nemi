@@ -173,19 +173,19 @@ export default function App() {
     <div className="flex flex-col h-screen bg-surface max-w-2xl mx-auto">
       <header className="flex flex-col border-b border-outline-variant bg-surface-container-lowest">
         <div className="flex items-center justify-between px-4 py-3">
-          <h1 className="font-bold text-on-surface text-base">{t.appName}</h1>
+          <h1 className="font-display font-bold text-on-surface text-base">{t.appName}</h1>
           <div className="flex items-center gap-3">
             <SessionTimer formatted={formatted} />
             <button
               onClick={() => setLanguage(language === "en" ? "es" : "en")}
-              className="text-xs text-on-surface-variant min-h-[44px] px-2"
+              className="text-xs text-on-surface-variant min-h-[44px] px-2 btn-press"
             >
               {t.langToggle}
             </button>
             {state !== SESSION_STATES.IDLE_BEFORE_START && (
               <button
                 onClick={() => { stopListening(); stopSpeaking(); setVoiceMode(false); toCompleted(); }}
-                className="text-sm text-red-500 min-h-[44px] px-2"
+                className="text-sm text-red-500 min-h-[44px] px-2 btn-press"
               >
                 {t.endSession}
               </button>

@@ -49,10 +49,10 @@ export default function ChatInput({
             onClick={onToggleVoice}
             disabled={isSpeaking}
             aria-label={isListening ? "Stop recording" : "Start voice input"}
-            className={`px-3 py-3 rounded-xl text-sm min-w-[44px] min-h-[44px] transition-colors disabled:opacity-40 ${
+            className={`px-3 py-3 rounded-xl text-sm min-w-[44px] min-h-[44px] btn-press disabled:opacity-40 ${
               isListening
                 ? "bg-red-100 text-red-600 animate-pulse"
-                : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                : "bg-surface-container text-on-surface-variant"
             }`}
           >
             <span className="material-symbols-outlined text-lg">mic</span>
@@ -73,7 +73,7 @@ export default function ChatInput({
             type="submit"
             disabled={disabled || !value.trim()}
             aria-label="Send message"
-            className="px-4 py-3 bg-primary text-on-primary rounded-2xl text-sm font-medium disabled:opacity-40 min-w-[44px] min-h-[44px] transition-colors"
+            className="px-4 py-3 bg-primary text-on-primary rounded-2xl text-sm font-medium disabled:opacity-40 min-w-[44px] min-h-[44px] btn-press"
           >
             <span className="material-symbols-outlined text-lg">arrow_upward</span>
           </button>

@@ -9,7 +9,7 @@ export default function LandingPage({ onStart }: Props) {
       {/* ── Header ── */}
       <header className="sticky top-0 z-50 bg-surface-container-lowest border-b border-outline-variant">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="text-lg font-semibold text-on-surface tracking-tight">
+          <span className="font-display text-lg font-semibold text-on-surface tracking-tight">
             Nemi AI
           </span>
           <nav className="hidden md:flex items-center gap-8 text-sm text-on-surface-variant">
@@ -20,7 +20,7 @@ export default function LandingPage({ onStart }: Props) {
           </nav>
           <button
             onClick={onStart}
-            className="bg-primary text-on-primary text-sm font-medium px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity min-h-[44px]"
+            className="bg-primary text-on-primary text-sm font-medium px-5 py-2.5 rounded-full min-h-[44px] btn-press"
           >
             Start Session
           </button>
@@ -34,7 +34,10 @@ export default function LandingPage({ onStart }: Props) {
             <span className="material-symbols-outlined text-sm" aria-hidden="true">school</span>
             Feynman Technique
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-on-surface leading-tight mb-6">
+          <h1
+            className="font-display font-bold text-on-surface leading-[1.1] mb-6"
+            style={{ fontSize: "clamp(2.25rem, 4vw + 1rem, 3.5rem)" }}
+          >
             Master any topic by teaching it.
           </h1>
           <p className="text-on-surface-variant text-lg leading-relaxed mb-8 max-w-lg">
@@ -42,7 +45,7 @@ export default function LandingPage({ onStart }: Props) {
           </p>
           <button
             onClick={onStart}
-            className="inline-flex items-center gap-2 bg-primary text-on-primary font-semibold px-7 py-4 rounded-full hover:opacity-90 transition-opacity min-h-[44px] text-base"
+            className="inline-flex items-center gap-2 bg-primary text-on-primary font-semibold px-7 py-4 rounded-full min-h-[44px] text-base btn-press"
           >
             Start Learning
             <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_forward</span>
@@ -68,7 +71,7 @@ export default function LandingPage({ onStart }: Props) {
       {/* ── Feynman Steps ── */}
       <section id="how-it-works" className="bg-surface-container-low py-20">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-on-surface text-center mb-4">How It Works</h2>
+          <h2 className="font-display text-3xl font-bold text-on-surface text-center mb-4">How It Works</h2>
           <p className="text-on-surface-variant text-center mb-12 max-w-xl mx-auto">
             Three steps based on the Feynman Technique — proven to lock knowledge in for good.
           </p>
@@ -92,12 +95,12 @@ export default function LandingPage({ onStart }: Props) {
             ].map(({ icon, title, body }) => (
               <div
                 key={title}
-                className="bg-surface-container-lowest rounded-2xl p-7 border border-outline-variant hover:-translate-y-1 transition-transform soft-lift"
+                className="bg-surface-container-lowest rounded-2xl p-7 border border-outline-variant card-hover soft-lift"
               >
                 <span className="material-symbols-outlined text-primary text-3xl mb-4 block" aria-hidden="true">
                   {icon}
                 </span>
-                <h3 className="font-semibold text-on-surface text-lg mb-2">{title}</h3>
+                <h3 className="font-display font-semibold text-on-surface text-xl mb-2">{title}</h3>
                 <p className="text-on-surface-variant text-sm leading-relaxed">{body}</p>
               </div>
             ))}
@@ -109,7 +112,7 @@ export default function LandingPage({ onStart }: Props) {
       <section id="methodology" className="max-w-6xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-12">
         <div className="flex-1">
           <div className="bg-surface-container-lowest rounded-3xl p-6 border border-outline-variant soft-lift-lg">
-            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-4">
+            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-[0.08em] mb-4">
               Session Summary
             </p>
             <ul className="space-y-3 text-sm text-on-surface">
@@ -133,7 +136,7 @@ export default function LandingPage({ onStart }: Props) {
           </div>
         </div>
         <div className="flex-1">
-          <h2 className="text-3xl font-bold text-on-surface mb-4">
+          <h2 className="font-display text-3xl font-bold text-on-surface mb-4">
             Feedback that actually helps.
           </h2>
           <p className="text-on-surface-variant leading-relaxed mb-6">
@@ -167,7 +170,7 @@ export default function LandingPage({ onStart }: Props) {
         }}
       >
         <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
             Ready to actually learn?
           </h2>
           <p className="text-inverse-primary opacity-80 mb-8 text-lg">
@@ -175,7 +178,7 @@ export default function LandingPage({ onStart }: Props) {
           </p>
           <button
             onClick={onStart}
-            className="inline-flex items-center gap-2 bg-on-primary text-primary font-semibold px-8 py-4 rounded-full hover:opacity-90 transition-opacity min-h-[44px] text-base"
+            className="inline-flex items-center gap-2 bg-on-primary text-primary font-semibold px-8 py-4 rounded-full min-h-[44px] text-base btn-press"
           >
             Start for Free
             <span className="material-symbols-outlined text-lg" aria-hidden="true">arrow_forward</span>
@@ -186,7 +189,7 @@ export default function LandingPage({ onStart }: Props) {
       {/* ── Footer ── */}
       <footer id="support" className="bg-surface-container-lowest border-t border-outline-variant">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="font-semibold text-on-surface">Nemi AI</span>
+          <span className="font-display font-semibold text-on-surface">Nemi AI</span>
           <p className="text-xs text-on-surface-variant">© 2026 Nemi. Built for learners.</p>
           <nav className="hidden md:flex items-center gap-6 text-sm text-on-surface-variant">
             <a href="#how-it-works" className="hover:text-on-surface transition-colors">How It Works</a>

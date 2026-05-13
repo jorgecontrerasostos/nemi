@@ -33,14 +33,14 @@ export default function SubtopicPicker({ topic, subtopics, onStart, onBack }: Pr
           <span className="material-symbols-outlined text-lg">arrow_back_ios</span>
           Back
         </button>
-        <span className="font-bold text-on-surface text-base">Nemi</span>
+        <span className="font-display font-bold text-on-surface text-base">Nemi</span>
         <div className="w-16" />
       </header>
 
       <div className="flex-1 flex flex-col px-5 py-6 gap-5 max-w-lg mx-auto w-full">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-2">Step 2 of 3</p>
-          <h1 className="text-xl font-bold text-on-surface mb-1">Which part of {topic} should we focus on?</h1>
+          <h1 className="font-display text-xl font-bold text-on-surface mb-1">Which part of {topic} should we focus on?</h1>
           <p className="text-sm text-on-surface-variant">Pick the area you want to explain. One at a time.</p>
         </div>
 
