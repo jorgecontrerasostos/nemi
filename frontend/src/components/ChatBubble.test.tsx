@@ -6,7 +6,7 @@ describe("ChatBubble", () => {
   it("renders assistant message with avatar", () => {
     render(<ChatBubble role="assistant" content="Hello!" />);
     expect(screen.getByText("Hello!")).toBeInTheDocument();
-    expect(screen.getByText("N")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /nemi/i })).toBeInTheDocument();
   });
 
   it("renders user message without avatar", () => {
