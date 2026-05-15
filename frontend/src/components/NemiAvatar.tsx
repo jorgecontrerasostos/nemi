@@ -20,6 +20,7 @@ const textSizeClasses: Record<Size, string> = {
   lg: "text-xl",
 };
 
+// mood will drive visual variants in V2 — unused for now
 export default function NemiAvatar({ size = "sm", mood: _mood = "default" }: Props) {
   const [imgFailed, setImgFailed] = useState(false);
 
@@ -34,7 +35,7 @@ export default function NemiAvatar({ size = "sm", mood: _mood = "default" }: Pro
   }
 
   return (
-    <div className={`${sizeClasses[size]} rounded-full bg-white flex-shrink-0 overflow-hidden`}>
+    <div className={`${sizeClasses[size]} rounded-full bg-surface-container-lowest flex-shrink-0 overflow-hidden`}>
       <img
         src="/nemi-avatar.png"
         alt="Nemi the axolotl"
